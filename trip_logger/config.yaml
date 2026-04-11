@@ -12,6 +12,7 @@ map:
 options:
   username: "your_email@example.com"
   password: "your_password"
+  folder: "/share/"
   region: 5
   brand: 1
 schema:
