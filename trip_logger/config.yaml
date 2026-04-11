@@ -1,5 +1,5 @@
 name: "Hyndai/Kia/Genesis Trip Logger"
-version: "1.0.5"
+version: "1.0.6"
 slug: "trip_logger"
 description: "Automatically pulls daily trip logs from Kia Connect and saves them to a CSV."
 arch:
