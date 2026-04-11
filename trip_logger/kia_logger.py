@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from hyundai_kia_connect_api import VehicleManager
 
 # Define paths (Using /share assumes you are running this as the Add-on)
+CSV_FILE = ""
 OPTIONS_FILE = "/data/options.json"
 
 def get_options():
