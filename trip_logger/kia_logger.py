@@ -56,6 +56,7 @@ def main():
     
     options = get_options()
     if not options:
+        print(f"Options file error!")
         return
 
     CSV_FILE = options['folder'] + "trips_log.csv"
