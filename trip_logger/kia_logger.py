@@ -59,7 +59,8 @@ def main():
         print(f"Options file error!")
         return
 
-    CSV_FILE = options['folder'] + "trips_log.csv"
+    output_folder = options.get('folder', '/share/').rstrip('/') + '/'
+    csv_file = os.path.join(output_folder, "trips_log.csv")
     
     # 1. Determine the Date Gap
     today = datetime.now().date()
