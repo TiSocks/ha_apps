@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from hyundai_kia_connect_api import VehicleManager
 
 # Define paths (Using /share assumes you are running this as the Add-on)
-CSV_FILE = "/share/kia_trips_log.csv"
 OPTIONS_FILE = "/data/options.json"
 
 def get_options():
@@ -59,6 +58,8 @@ def main():
     if not options:
         return
 
+    CSV_FILE = options['folder'] + "trips_log.csv"
+    
     # 1. Determine the Date Gap
     today = datetime.now().date()
     yesterday = today - timedelta(days=1)
