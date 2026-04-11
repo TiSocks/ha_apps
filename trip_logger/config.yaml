@@ -1,5 +1,5 @@
 name: "Hyndai/Kia/Genesis Trip Logger"
-version: "1.0.4"
+version: "1.0.5"
 slug: "trip_logger"
 description: "Automatically pulls daily trip logs from Kia Connect and saves them to a CSV."
 arch:
@@ -12,11 +12,12 @@ map:
 options:
   username: "your_email@example.com"
   password: "your_password"
-  folder: "//share//"
+  folder: "/share/"
   region: 5
   brand: 1
 schema:
   username: str
   password: password
+  folder: str
   region: int
   brand: int
