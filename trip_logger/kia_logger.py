@@ -9,6 +9,24 @@ from hyundai_kia_connect_api import VehicleManager
 CSV_FILE = ""
 OPTIONS_FILE = "/data/options.json"
 
+# Map the string values from the HA Add-on drop-downs back to the integers required by the API
+REGION_MAP = {
+    "EUROPE": 1, 
+    "CANADA": 2, 
+    "USA": 3, 
+    "CHINA": 4, 
+    "AUSTRALIA": 5, 
+    "INDIA": 6, 
+    "NZ": 7, 
+    "BRAZIL": 8
+}
+
+BRAND_MAP = {
+    "KIA": 1, 
+    "HYUNDAI": 2, 
+    "GENESIS": 3
+}
+
 def get_options():
     try:
         with open(OPTIONS_FILE) as f:
@@ -85,9 +103,13 @@ def main():
     # 2. Authenticate with Kia
     print("Authenticating with Kia Connect...")
     try:
+        # Convert the string options from config to integers for the API
+        region_int = REGION_MAP.get(options.get('region'), 1)
+        brand_int = BRAND_MAP.get(options.get('brand'), 1)
+        
         vm = VehicleManager(
-            region=options['region'],
-            brand=options['brand'],
+            region=region_int,
+            brand=brand_int,
             username=options['username'],
             password=options['password'],
             pin="" 
