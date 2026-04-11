@@ -60,7 +60,7 @@ def main():
         return
 
     output_folder = options.get('folder', '/share/').rstrip('/') + '/'
-    csv_file = os.path.join(output_folder, "trips_log.csv")
+    CSV_FILE = os.path.join(output_folder, "trips_log.csv")
     
     # 1. Determine the Date Gap
     today = datetime.now().date()
