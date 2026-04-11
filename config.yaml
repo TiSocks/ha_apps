@@ -1,0 +1,21 @@
+name: "Kia Trip Logger"
+version: "1.0.3"
+slug: "kia_trip_logger"
+description: "Automatically pulls daily trip logs from Kia Connect and saves them to a CSV."
+arch:
+  - aarch64
+  - amd64
+init: false
+hassio_api: true
+map:
+  - share:rw
+options:
+  username: "your_email@example.com"
+  password: "your_password"
+  region: 5
+  brand: 1
+schema:
+  username: str
+  password: password
+  region: int
+  brand: int
