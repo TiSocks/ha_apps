@@ -4,9 +4,6 @@ FROM python:3.11-alpine
 # Don't buffer output
 ENV PYTHONUNBUFFERED=1
 
-# Set the container's timezone to Perth
-ENV TZ="Australia/Perth"
-
 # Install timezone data so Alpine understands the TZ variable
 RUN apk add --no-cache tzdata
 
