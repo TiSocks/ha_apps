@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import csv
 import urllib.request
@@ -70,6 +71,13 @@ def stop_addon():
             print(f"API Error: {e}")
 
 def main():
+    # Grab the timezone injected by the Home Assistant Supervisor
+    # (Defaults to UTC if for some reason it isn't found)
+    tz = os.environ.get('TZ', 'UTC')
+    os.environ['TZ'] = tz
+    time.tzset() # Applies the timezone to the local Python environment
+
+    print()
     print(f"\n--- Starting Kia Trip Sync: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
     
     options = get_options()
