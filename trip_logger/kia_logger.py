@@ -77,7 +77,7 @@ def main():
     os.environ['TZ'] = tz
     time.tzset() # Applies the timezone to the local Python environment
 
-    print()
+    print(f"")
     print(f"\n--- Starting Kia Trip Sync: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
     
     options = get_options()
