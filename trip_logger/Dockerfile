@@ -10,9 +10,15 @@ ENV TZ="Australia/Perth"
 # Install timezone data so Alpine understands the TZ variable
 RUN apk add --no-cache tzdata
 
-# Install the required Python packages
-# (Raw Python images don't require the break-system-packages flag)
-RUN pip install --no-cache-dir hyundai_kia_connect_api schedule
+## Install the required Python packages
+## (Raw Python images don't require the break-system-packages flag)
+#RUN pip install --no-cache-dir hyundai_kia_connect_api schedule
+
+# Copy the requirements file into the container
+COPY requirements.txt /
+
+# Install the required Python packages from the file
+RUN pip install --no-cache-dir -r /requirements.txt
 
 # Copy only the Python script into the container
 COPY kia_logger.py /
