@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - 'trip_logger/requirements.txt' # Triggers only when dependencies change
+      - 'trip_logger/**'
 
 jobs:
   update-addon:
