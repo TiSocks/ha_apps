@@ -1,1 +1,1 @@
-Download Tips for analysis.
+Download Vehical Trips for analysis.
