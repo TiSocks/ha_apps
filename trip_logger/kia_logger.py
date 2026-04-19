@@ -146,7 +146,7 @@ def main():
 
             # Write header if file is brand new
             if not file_exists:
-                writer.writerow(["Date", "Start Time", "Distance (km)", "Drive Time (mins)", "Idle Time (mins)"])
+                writer.writerow(["Date", "Start Time", "Distance (km)", "Drive Time (mins)", "Idle Time (mins)", "Avg Speed (km/h)", "Max Speed (km/h)"])
 
             # 4. Fetch and Write Data
             for month_str in months_to_fetch:
@@ -171,7 +171,7 @@ def main():
                             start_time = f"{trip.hhmmss[:2]}:{trip.hhmmss[2:4]}:{trip.hhmmss[4:]}"
                             date_formatted = day.strftime("%Y-%m-%d")
                             
-                            writer.writerow([date_formatted, start_time, trip.distance, trip.drive_time, trip.idle_time])
+                            writer.writerow([date_formatted, start_time, trip.distance, trip.drive_time, trip.idle_time, trip.avg_speed, trip.max_speed])
                             trip_count += 1
                             
                         print(f"     Appended {trip_count} trips.")
