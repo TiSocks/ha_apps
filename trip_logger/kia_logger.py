@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from hyundai_kia_connect_api import VehicleManager
 
 # Define paths (Using /share assumes you are running this as the Add-on)
-CSV_FILE = ""
 OPTIONS_FILE = "/data/options.json"
 
 # Map the string values from the HA Add-on drop-downs back to the integers required by the API
@@ -44,7 +43,7 @@ def get_last_logged_date(csv_path):
         return (datetime.now() - timedelta(days=3)).date()
 
     try:
-        with open(CSV_FILE, 'r') as file:
+        with open(csv_path, 'r') as file:
             lines = file.readlines()
             if len(lines) > 1: # Ensure there is data beyond the header
                 last_line = lines[-1].strip()
@@ -129,12 +128,12 @@ def main():
         vehicle = vm.vehicles[vehicle_id]
         print(f"Successfully connected to vehicle: {vehicle.name}")
 
-        file_exists = os.path.isfile(CSV_FILE)
+        file_exists = os.path.isfile(csv_path)
         
         # 3. Group missing dates by month (YYYYMM) to minimize API calls
         months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
         
-        with open(CSV_FILE, mode='a', newline='') as file:
+        with open(csv_path, mode='a', newline='') as file:
             writer = csv.writer(file)
 
             # Write header if file is brand new
