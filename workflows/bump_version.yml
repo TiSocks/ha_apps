@@ -1,0 +1,38 @@
+name: Bump Add-on Version and Build
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'requirements.txt' # Triggers only when dependencies change
+
+jobs:
+  update-addon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup yq
+        uses: mikefarah/yq@master
+
+      - name: Bump Version in config.yaml
+        run: |
+          # Grabs the current version and increments the patch number
+          CURRENT_VERSION=$(yq e '.version' config.yaml)
+          # Assuming semantic versioning like 1.0.x
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. -v OFS=. '{$NF += 1 ; print}')
+          
+          # Update the config.yaml file
+          yq e -i ".version = \"$NEW_VERSION\"" config.yaml
+          echo "Updated config.yaml from $CURRENT_VERSION to $NEW_VERSION"
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add config.yaml
+          git commit -m "chore: bump add-on version for dependency update"
+          git push
