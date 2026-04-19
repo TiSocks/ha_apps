@@ -36,9 +36,9 @@ def get_options():
         print("Add-on options not found. Ensure you are running within Home Assistant.")
         return None
 
-def get_last_logged_date():
+def get_last_logged_date(csv_path):
     """Reads the CSV to find the last successfully logged date."""
-    if not os.path.isfile(CSV_FILE):
+    if not os.path.isfile(csv_path):
         # If no file exists, default to catching up on the last 3 days
         print("No CSV found. Initializing a new one and fetching the last 3 days.")
         return (datetime.now() - timedelta(days=3)).date()
@@ -79,12 +79,12 @@ def main():
         return
 
     output_folder = options.get('folder', '/share/').rstrip('/') + '/'
-    CSV_FILE = os.path.join(output_folder, "trips_log.csv")
+    csv_path = os.path.join(output_folder, "trips_log.csv")
     
     # 1. Determine the Date Gap
     today = datetime.now().date()
     yesterday = today - timedelta(days=1)
-    last_logged_date = get_last_logged_date()
+    last_logged_date = get_last_logged_date(csv_path)
 
     if last_logged_date >= yesterday:
         print(f"Logs are already up to date (Last record: {last_logged_date}). Exiting.")
