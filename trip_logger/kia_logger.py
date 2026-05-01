@@ -88,7 +88,11 @@ def main():
 
     output_folder = options.get('folder', '/share/').rstrip('/') + '/'
     csv_path = os.path.join(output_folder, "trips_log.csv")
-    
+
+    file_exists = os.path.isfile(csv_path)
+    if not file_exists:
+        print("No CSV found.")
+        
     today = datetime.now().date()
     yesterday = today - timedelta(days=1)
     last_logged_date = get_last_logged_date(csv_path)
@@ -104,6 +108,7 @@ def main():
         current_date += timedelta(days=1)
 
     try:
+        print("Checking Online Account...")
         vm = VehicleManager(
             region=REGION_MAP.get(options.get('region'), 1),
             brand=BRAND_MAP.get(options.get('brand'), 1),
@@ -111,21 +116,19 @@ def main():
             password=options['password'],
             pin="" 
         )
-        print("Checking Online Account...")
+
         vm.check_and_refresh_token()
         vm.update_all_vehicles_with_cached_state()
-
-        file_exists = os.path.isfile(csv_path)
-        if not file_exists:
-            print("No CSV found.")
-        
-        months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
 
         if not vm.vehicles:
             print("No vehicles found.")
             return
-            
+
+        print("Starting vehical sync...")
         vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
+
+        months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
+        print(f"Months to fetch: {months_to_fetch}")
         
         with open(csv_path, mode='a', newline='') as file:
             writer = csv.writer(file)
