@@ -148,9 +148,12 @@ def main():
                             writer.writerow(row)
                             
                             # Write to Postgres
-                            write_to_postgres(options, row)
+                            #write_to_postgres(options, row)
                             
                         print(f"Synced {day.strftime('%Y-%m-%d')} to CSV and DB.")
+
+            print("==========")
+            print(" ")
 
     except Exception as e:
         print(f"Critical error: {e}")
