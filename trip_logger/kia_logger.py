@@ -109,16 +109,38 @@ def main():
 
     try:
         print("Checking Online Account...")
-        vm = VehicleManager(
-            region=REGION_MAP.get(options.get('region'), 1),
-            brand=BRAND_MAP.get(options.get('brand'), 1),
-            username=options['username'],
-            password=options['password'],
-            pin="" 
-        )
-
-        vm.check_and_refresh_token()
-        vm.update_all_vehicles_with_cached_state()
+        
+        # --- ENHANCED AUTHENTICATION WITH RETRY ---
+        vm = None
+        max_retries = 3
+        for attempt in range(1, max_retries + 1):
+            try:
+                print(f"Checking Online Account (Attempt {attempt}/{max_retries})...")
+                vm = VehicleManager(
+                    region=REGION_MAP.get(options.get('region'), 5), # Defaulting to Australia
+                    brand=BRAND_MAP.get(options.get('brand'), 1),
+                    username=options['username'],
+                    password=options['password'],
+                    pin="" 
+                )
+                vm.check_and_refresh_token()
+                vm.update_all_vehicles_with_cached_state()
+                
+                if vm.vehicles:
+                    print("Authentication successful.")
+                    break
+                else:
+                    print("No vehicles found in account yet.")
+                    return
+            except Exception as e:
+                print(f"Connection attempt {attempt} failed: {e}")
+                if attempt < max_retries:
+                    print("Waiting 60 seconds before retrying...")
+                    time.sleep(60)
+                else:
+                    print("Max retries reached. Kia servers are likely down.")
+                    return
+        # ------------------------------------------
 
         if not vm.vehicles:
             print("No vehicles found.")
