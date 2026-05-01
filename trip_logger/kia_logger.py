@@ -83,9 +83,6 @@ def main():
     os.environ['TZ'] = tz
     time.tzset()
 
-    print("----------")
-    print(f"Starting Trip Sync: {datetime.now()}")
-    
     options = get_options()
     if not options: return
 
@@ -121,9 +118,12 @@ def main():
         if not vm.vehicles:
             print("No vehicles found.")
 
-        vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
-        file_exists = os.path.isfile(csv_path)
+        if not file_exists = os.path.isfile(csv_path)
+            print("No CSV found.")
+        
         months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
+
+        vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
         
         with open(csv_path, mode='a', newline='') as file:
             writer = csv.writer(file)
@@ -155,13 +155,14 @@ def main():
                             
                         print(f"Synced {day.strftime('%Y-%m-%d')} to CSV and DB.")
 
-        print(f"Finished Trip Sync: {datetime.now()}")
-        print("==========")
-        print(" ")
-
     except Exception as e:
         print(f"Critical error: {e}")
 
 if __name__ == "__main__":
+    print("----------")
+    print(f"Starting Trip Sync: {datetime.now()}")
     main()
+    print(f"Finished Trip Sync: {datetime.now()}")
+    print("==========")
+    print(" ")
     stop_addon()
