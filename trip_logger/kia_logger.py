@@ -121,11 +121,11 @@ def main():
         
         months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
 
-        if vm.vehicles:
-            vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
-        else:
+        if not vm.vehicles:
             print("No vehicles found.")
-
+            return
+            
+        vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
         
         with open(csv_path, mode='a', newline='') as file:
             writer = csv.writer(file)
