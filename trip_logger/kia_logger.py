@@ -123,7 +123,7 @@ def main():
 
         if vm.vehicles:
             vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
-        else
+        else:
             print("No vehicles found.")
 
         
