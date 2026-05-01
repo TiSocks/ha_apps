@@ -120,7 +120,6 @@ def main():
 
         if not vm.vehicles:
             print("No vehicles found.")
-            return
 
         vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
         file_exists = os.path.isfile(csv_path)
