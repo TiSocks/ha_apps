@@ -15,9 +15,19 @@ options:
   folder: "/share/"
   region: "AUSTRALIA"
   brand: "KIA"
+  db_host: "192.168.1.xxx"
+  db_name: "homeassistant"
+  db_user: "postgres"
+  db_password: ""
+  db_port: 5432
 schema:
   username: str
   password: password
   folder: str
   region: "list(EUROPE|CANADA|USA|CHINA|AUSTRALIA|INDIA|NZ|BRAZIL)"
   brand: "list(KIA|HYUNDAI|GENESIS)"
+  db_host: "str"
+  db_name: "str"
+  db_user: "str"
+  db_password: "password"
+  db_port: "int(1,65535)"
