@@ -115,16 +115,17 @@ def main():
         vm.check_and_refresh_token()
         vm.update_all_vehicles_with_cached_state()
 
-        if not vm.vehicles:
-            print("No vehicles found.")
-
         file_exists = os.path.isfile(csv_path)
         if not file_exists:
             print("No CSV found.")
         
         months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
 
-        vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
+        if vm.vehicles:
+            vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
+        else
+            print("No vehicles found.")
+
         
         with open(csv_path, mode='a', newline='') as file:
             writer = csv.writer(file)
