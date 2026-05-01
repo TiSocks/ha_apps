@@ -118,7 +118,8 @@ def main():
         if not vm.vehicles:
             print("No vehicles found.")
 
-        if not file_exists = os.path.isfile(csv_path)
+        file_exists = os.path.isfile(csv_path)
+        if not file_exists:
             print("No CSV found.")
         
         months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
