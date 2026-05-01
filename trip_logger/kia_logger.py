@@ -83,6 +83,9 @@ def main():
     os.environ['TZ'] = tz
     time.tzset()
 
+    print("----------")
+    print("Starting Trip Sync")
+    
     options = get_options()
     if not options: return
 
@@ -111,6 +114,7 @@ def main():
             password=options['password'],
             pin="" 
         )
+        print("Checking Online Account...")
         vm.check_and_refresh_token()
         vm.update_all_vehicles_with_cached_state()
 
@@ -152,8 +156,8 @@ def main():
                             
                         print(f"Synced {day.strftime('%Y-%m-%d')} to CSV and DB.")
 
-            print("==========")
-            print(" ")
+        print("==========")
+        print(" ")
 
     except Exception as e:
         print(f"Critical error: {e}")
