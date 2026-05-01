@@ -84,7 +84,7 @@ def main():
     time.tzset()
 
     print("----------")
-    print("Starting Trip Sync")
+    print(f"Starting Trip Sync: {datetime.now()}")
     
     options = get_options()
     if not options: return
@@ -156,6 +156,7 @@ def main():
                             
                         print(f"Synced {day.strftime('%Y-%m-%d')} to CSV and DB.")
 
+        print(f"Finished Trip Sync: {datetime.now()}")
         print("==========")
         print(" ")
 
