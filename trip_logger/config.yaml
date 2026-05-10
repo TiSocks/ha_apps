@@ -1,18 +1,15 @@
 name: "Hyndai/Kia/Genesis Trip Logger"
-version: "1.0.32"
+version: "1.1.0"
 slug: "trip_logger"
-description: "Automatically pulls daily trip logs from Kia Connect and saves them to a CSV."
+description: "Automatically pulls daily trip logs and energy stats from Kia Connect and saves them to a PostgreSQL database."
 arch:
   - aarch64
   - amd64
 init: false
 hassio_api: true
-map:
-  - share:rw
 options:
   username: "your_email@example.com"
   password: "your_password"
-  folder: "/share/"
   region: "AUSTRALIA"
   brand: "KIA"
   db_host: "192.168.1.xxx"
@@ -23,7 +20,6 @@ options:
 schema:
   username: str
   password: password
-  folder: str
   region: "list(EUROPE|CANADA|USA|CHINA|AUSTRALIA|INDIA|NZ|BRAZIL)"
   brand: "list(KIA|HYUNDAI|GENESIS)"
   db_host: "str"

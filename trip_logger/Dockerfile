@@ -1,5 +1,5 @@
 # Use a pure, lightweight Python image (bypassing HA's s6-overlay)
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 
 # Don't buffer output
 ENV PYTHONUNBUFFERED=1

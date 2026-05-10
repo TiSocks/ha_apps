@@ -1,9 +1,12 @@
-# HA_apps
+# TiSocks Home Assistant Add-ons
 
-Trip Logger:
+Welcome to my Home Assistant Add-ons repository. 
 
-Create a local copy of vehical trips.
+## Add-ons included:
 
-Using https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api
+### [Trip Logger](./trip_logger/README.md)
+A Home Assistant add-on that logs your vehicle trips and energy stats to a local PostgreSQL database.
 
-Automatically downloads un-synced trips available on profile for all available vehicals.
+Powered by the [hyundai_kia_connect_api](https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api).
+
+Automatically downloads un-synced trips and daily energy stats available on your profile for all available vehicles.
