@@ -4,3 +4,8 @@ updates:
     directory: "/trip_logger" # Location of your requirements.txt
     schedule:
       interval: "daily"
+      
+  - package-ecosystem: "docker"
+    directory: "/trip_logger"
+    schedule:
+      interval: "weekly"
