@@ -4,7 +4,7 @@ FROM python:3.11-alpine
 # Don't buffer output
 ENV PYTHONUNBUFFERED=1
 
-ARG APP_VERSION=1.1.2
+ARG APP_VERSION=1.1.3
 LABEL org.opencontainers.image.version="${APP_VERSION}"
 LABEL org.opencontainers.image.source="https://github.com/TiSocks/HyundaiDataLogger"
 

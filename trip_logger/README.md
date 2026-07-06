@@ -6,6 +6,7 @@ A Home Assistant Add-on that automatically syncs your daily vehicle trip logs an
 - **Data Syncing:** Fetches un-synced trips available on your profile for all available vehicles.
 - **Energy Stats:** Fetches your daily energy consumption and regenerated energy.
 - **Database Integration:** Automatically creates and updates `vehicle_trips` and `vehicle_daily_stats` tables in your PostgreSQL database.
+- **Web UI Dashboard:** Features a standalone web interface on port `5002` to manage sync intervals, flush logs, and manually trigger sync operations.
 - **Robust:** Graceful error handling with retry loops for Kia server downtime.
 
 ## Configuration Options
