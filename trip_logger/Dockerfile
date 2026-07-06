@@ -1,15 +1,14 @@
 # Use a pure, lightweight Python image
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 # Don't buffer output
 ENV PYTHONUNBUFFERED=1
 
-ARG APP_VERSION=1.1.5
+ARG APP_VERSION=1.1.6
 LABEL org.opencontainers.image.version="${APP_VERSION}"
 LABEL org.opencontainers.image.source="https://github.com/TiSocks/HyundaiDataLogger"
 
-# Install timezone data so Alpine understands the TZ variable
-RUN apk add --no-cache tzdata gcc musl-dev postgresql-dev libpq-dev python3-dev
+RUN apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app

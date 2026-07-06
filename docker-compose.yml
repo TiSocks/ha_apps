@@ -5,11 +5,11 @@ services:
     build: 
       context: ./trip_logger
       args:
-        - APP_VERSION=${APP_VERSION:-1.1.5}
+        - APP_VERSION=${APP_VERSION:-1.1.6}
     container_name: data_logger
     restart: unless-stopped
     labels:
-      - "org.opencontainers.image.version=${APP_VERSION:-1.1.5}"
+      - "org.opencontainers.image.version=${APP_VERSION:-1.1.6}"
       - "org.opencontainers.image.source=https://github.com/TiSocks/HyundaiDataLogger"
       - "org.opencontainers.image.title=Hyundai/Kia/Genesis Data Logger"
     ports:
