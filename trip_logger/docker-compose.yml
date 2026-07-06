@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  data_logger:
+    build: 
+      context: .
+      args:
+        - APP_VERSION=${APP_VERSION:-1.1.2}
+    container_name: data_logger
+    restart: unless-stopped
+    labels:
+      - "org.opencontainers.image.version=${APP_VERSION:-1.1.2}"
+      - "org.opencontainers.image.source=https://github.com/TiSocks/HyundaiDataLogger"
+      - "org.opencontainers.image.title=Hyundai/Kia/Genesis Data Logger"
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./data:/app/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - logger_net
+
+networks:
+  logger_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.201.3.0/24

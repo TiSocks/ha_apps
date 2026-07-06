@@ -1,14 +1,15 @@
 import os
 import time
 import json
-import urllib.request
-import psycopg2 # Ensure you add 'psycopg2-binary' to your requirements.txt
+import logging
+import psycopg2
 from datetime import datetime, timedelta
 from hyundai_kia_connect_api import VehicleManager
 
+logger = logging.getLogger(__name__)
+
 # Define paths
-OPTIONS_FILE = "/data/options.json"
-LOCAL_OPTIONS_FILE = "./options.json"
+OPTIONS_FILE = "./data/options.json"
 
 REGION_MAP = {"EUROPE": 1, "CANADA": 2, "USA": 3, "CHINA": 4, "AUSTRALIA": 5, "INDIA": 6, "NZ": 7, "BRAZIL": 8}
 BRAND_MAP = {"KIA": 1, "HYUNDAI": 2, "GENESIS": 3}
@@ -17,12 +18,8 @@ def get_options():
     if os.path.exists(OPTIONS_FILE):
         with open(OPTIONS_FILE) as f:
             return json.load(f)
-    elif os.path.exists(LOCAL_OPTIONS_FILE):
-        print(f"Using local options file: {LOCAL_OPTIONS_FILE}")
-        with open(LOCAL_OPTIONS_FILE) as f:
-            return json.load(f)
     else:
-        print("Add-on options not found. Ensure you are running within Home Assistant or have options.json locally.")
+        logger.info(f"Options file not found at {OPTIONS_FILE}. Please configure via the web UI.")
         return None
 
 def get_db_connection(options):
@@ -31,7 +28,8 @@ def get_db_connection(options):
         database=options.get('db_name'),
         user=options.get('db_user'),
         password=options.get('db_password'),
-        port=options.get('db_port', 5432)
+        port=options.get('db_port', 5432),
+        connect_timeout=5
     )
 
 def setup_database(options):
@@ -65,7 +63,7 @@ def setup_database(options):
         ''')
         conn.commit()
     except Exception as e:
-        print(f"Database Setup Error: {e}")
+        logger.error(f"Database Setup Error: {e}")
     finally:
         if conn: conn.close()
 
@@ -79,35 +77,33 @@ def get_last_logged_date(options):
         if result and result[0]:
             return result[0]
     except Exception as e:
-        print(f"Warning: Could not fetch last logged date from DB: {e}")
+        logger.warning(f"Warning: Could not fetch last logged date from DB: {e}")
     finally:
         if conn: conn.close()
     return (datetime.now() - timedelta(days=3)).date()
 
-def stop_addon():
-    token = os.environ.get("SUPERVISOR_TOKEN")
-    if token:
-        req = urllib.request.Request(
-            "http://supervisor/addons/self/stop",
-            headers={"Authorization": f"Bearer {token}"},
-            method="POST"
-        )
-        try:
-            urllib.request.urlopen(req)
-        except Exception as e:
-            print(f"API Error: {e}")
-
 def main():
     try:
-        tz = os.environ.get('TZ', 'UTC')
-        os.environ['TZ'] = tz
-        if hasattr(time, 'tzset'):
-            time.tzset()
+        tz = os.environ.get('TZ')
+        if tz:
+            os.environ['TZ'] = tz
+            if hasattr(time, 'tzset'):
+                time.tzset()
     except Exception as e:
-        print(f"TZ setting skipped: {e}")
+        logger.warning(f"TZ setting skipped: {e}")
 
     options = get_options()
     if not options: return
+
+    # Validate required DB options
+    if not all([options.get('db_host'), options.get('db_name'), options.get('db_user')]):
+        logger.error("Database configuration is incomplete. Please update via the web interface.")
+        return
+
+    # Validate required Kia options
+    if not all([options.get('username'), options.get('password')]):
+        logger.error("Kia/Hyundai account configuration is incomplete. Please update via the web interface.")
+        return
 
     setup_database(options)
 
@@ -123,13 +119,13 @@ def main():
         current_date += timedelta(days=1)
 
     try:
-        print("Checking Online Account...")
+        logger.info("Checking Online Account...")
         
         vm = None
         max_retries = 3
         for attempt in range(1, max_retries + 1):
             try:
-                print(f"Checking Online Account (Attempt {attempt}/{max_retries})...")
+                logger.info(f"Checking Online Account (Attempt {attempt}/{max_retries})...")
                 vm = VehicleManager(
                     region=REGION_MAP.get(options.get('region'), 5),
                     brand=BRAND_MAP.get(options.get('brand'), 1),
@@ -141,24 +137,24 @@ def main():
                 vm.update_all_vehicles_with_cached_state()
                 
                 if vm.vehicles:
-                    print("Authentication successful.")
+                    logger.info("Authentication successful.")
                     break
                 else:
-                    print("No vehicles found in account yet.")
+                    logger.info("No vehicles found in account yet.")
                     return
             except Exception as e:
-                print(f"Connection attempt {attempt} failed: {e}")
+                logger.error(f"Connection attempt {attempt} failed: {e}")
                 if attempt < max_retries:
-                    time.sleep(60)
+                    time.sleep(10) # Reduced sleep for better responsiveness in web UI
                 else:
-                    print("Max retries reached. Kia servers are likely down.")
+                    logger.error("Max retries reached. Kia servers are likely down.")
                     return
 
         if not vm.vehicles:
-            print("No vehicles found.")
+            logger.warning("No vehicles found.")
             return
 
-        print("Starting vehicle sync...")
+        logger.info("Starting vehicle sync...")
         vehicle = vm.vehicles[list(vm.vehicles.keys())[0]]
         
         conn = get_db_connection(options)
@@ -166,33 +162,29 @@ def main():
 
         # Sync daily stats
         if hasattr(vehicle, 'daily_stats') and vehicle.daily_stats:
-            print(f"Found {len(vehicle.daily_stats)} daily stats records. Syncing to DB...")
+            logger.info(f"Found {len(vehicle.daily_stats)} daily stats records. Syncing to DB...")
             for stat in vehicle.daily_stats:
                 stat_date = stat.date.date() if isinstance(stat.date, datetime) else stat.date
-                try:
-                    cur.execute('''
-                        INSERT INTO vehicle_daily_stats 
-                        (stat_date, total_consumed_wh, engine_consumption_wh, climate_consumption_wh, onboard_electronics_wh, battery_care_wh, regenerated_energy_wh, distance)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (stat_date) DO UPDATE SET
-                        total_consumed_wh = EXCLUDED.total_consumed_wh,
-                        engine_consumption_wh = EXCLUDED.engine_consumption_wh,
-                        climate_consumption_wh = EXCLUDED.climate_consumption_wh,
-                        onboard_electronics_wh = EXCLUDED.onboard_electronics_wh,
-                        battery_care_wh = EXCLUDED.battery_care_wh,
-                        regenerated_energy_wh = EXCLUDED.regenerated_energy_wh,
-                        distance = EXCLUDED.distance;
-                    ''', (
-                        stat_date, stat.total_consumed, stat.engine_consumption, stat.climate_consumption,
-                        stat.onboard_electronics_consumption, stat.battery_care_consumption, stat.regenerated_energy, stat.distance
-                    ))
-                except Exception as e:
-                    print(f"Failed to insert daily stat for {stat_date}: {e}")
-            conn.commit()
+                cur.execute('''
+                    INSERT INTO vehicle_daily_stats 
+                    (stat_date, total_consumed_wh, engine_consumption_wh, climate_consumption_wh, onboard_electronics_wh, battery_care_wh, regenerated_energy_wh, distance)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (stat_date) DO UPDATE SET
+                    total_consumed_wh = EXCLUDED.total_consumed_wh,
+                    engine_consumption_wh = EXCLUDED.engine_consumption_wh,
+                    climate_consumption_wh = EXCLUDED.climate_consumption_wh,
+                    onboard_electronics_wh = EXCLUDED.onboard_electronics_wh,
+                    battery_care_wh = EXCLUDED.battery_care_wh,
+                    regenerated_energy_wh = EXCLUDED.regenerated_energy_wh,
+                    distance = EXCLUDED.distance;
+                ''', (
+                    stat_date, stat.total_consumed, stat.engine_consumption, stat.climate_consumption,
+                    stat.onboard_electronics_consumption, stat.battery_care_consumption, stat.regenerated_energy, stat.distance
+                ))
 
         months_to_fetch = sorted(list(set(d.strftime("%Y%m") for d in missing_dates)))
         if months_to_fetch:
-            print(f"Months to fetch for trips: {months_to_fetch}")
+            logger.info(f"Months to fetch for trips: {months_to_fetch}")
 
         for month_str in months_to_fetch:
             vm.update_month_trip_info(vehicle.id, month_str)
@@ -210,31 +202,34 @@ def main():
                         date_formatted = day.strftime("%Y-%m-%d")
                         trip_data = (date_formatted, start_time, trip.distance, trip.drive_time, trip.idle_time, trip.avg_speed, trip.max_speed)
                         
-                        try:
-                            cur.execute('''
-                                INSERT INTO vehicle_trips 
-                                (trip_date, start_time, distance_km, drive_time_mins, idle_time_mins, avg_speed_kmh, max_speed_kmh)
-                                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                                ON CONFLICT (trip_date, start_time) DO NOTHING;
-                            ''', trip_data)
-                            inserted += 1
-                        except Exception as e:
-                            print(f"Failed to insert trip for {date_formatted} {start_time}: {e}")
+                        cur.execute('''
+                            INSERT INTO vehicle_trips 
+                            (trip_date, start_time, distance_km, drive_time_mins, idle_time_mins, avg_speed_kmh, max_speed_kmh)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            ON CONFLICT (trip_date, start_time) DO NOTHING;
+                        ''', trip_data)
+                        inserted += 1
                             
-                    print(f"Synced {inserted} trips for {day.strftime('%Y-%m-%d')} to DB.")
+                    logger.info(f"Synced {inserted} trips for {day.strftime('%Y-%m-%d')} to DB.")
         
         conn.commit()
         cur.close()
         conn.close()
 
     except Exception as e:
-        print(f"Critical error: {e}")
+        if 'conn' in locals() and conn:
+            try:
+                conn.rollback()
+                conn.close()
+            except Exception:
+                pass
+        logger.error(f"Critical error: {e}")
 
 if __name__ == "__main__":
-    print("----------")
-    print(f"Starting Trip Sync: {datetime.now()}")
+    # If run directly for testing, just log to console
+    logging.basicConfig(level=logging.INFO)
+    logger.info("----------")
+    logger.info(f"Starting Data Sync (CLI mode): {datetime.now()}")
     main()
-    print(f"Finished Trip Sync: {datetime.now()}")
-    print("==========")
-    print(" ")
-    stop_addon()
+    logger.info(f"Finished Data Sync: {datetime.now()}")
+    logger.info("==========")

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Logger Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <h1>Data Logger</h1>
+                <span class="badge">Standalone Web UI</span>
+            </div>
+            <div class="header-controls">
+                <button id="theme-toggle" class="btn btn-icon" title="Toggle Light/Dark Theme">
+                    <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+                <span id="sync-indicator" class="badge" style="display: none; background-color: var(--primary-color); margin-right: 10px;">Syncing...</span>
+                <button id="trigger-sync" class="btn btn-primary">Manual Sync</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-target="logs-section">Logs</button>
+            <button class="tab-btn" data-target="config-section">Kia Configuration</button>
+            <button class="tab-btn" data-target="settings-section">App Settings</button>
+        </nav>
+
+        <main>
+            <section id="logs-section" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Application Logs</h2>
+                        <div>
+                            <button id="refresh-logs" class="btn btn-small">Refresh</button>
+                            <button id="flush-logs" class="btn btn-small" style="background-color: #ef4444; color: white;">Flush</button>
+                        </div>
+                    </div>
+                    <div class="log-container" id="log-container">
+                        Loading...
+                    </div>
+                </div>
+            </section>
+
+            <section id="config-section" class="tab-content">
+                <div class="card">
+                    <h2>Kia Account Configuration</h2>
+                    <form id="config-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="cfg-username" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="cfg-password" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Region</label>
+                                <select id="cfg-region">
+                                    <option value="EUROPE">Europe</option>
+                                    <option value="CANADA">Canada</option>
+                                    <option value="USA">USA</option>
+                                    <option value="CHINA">China</option>
+                                    <option value="AUSTRALIA">Australia</option>
+                                    <option value="INDIA">India</option>
+                                    <option value="NZ">New Zealand</option>
+                                    <option value="BRAZIL">Brazil</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Brand</label>
+                                <select id="cfg-brand">
+                                    <option value="KIA">Kia</option>
+                                    <option value="HYUNDAI">Hyundai</option>
+                                    <option value="GENESIS">Genesis</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h3>Database Configuration</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>DB Host</label>
+                                <input type="text" id="cfg-db_host" required>
+                            </div>
+                            <div class="form-group">
+                                <label>DB Port</label>
+                                <input type="number" id="cfg-db_port" value="5432">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>DB Name</label>
+                                <input type="text" id="cfg-db_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>DB User</label>
+                                <input type="text" id="cfg-db_user" required>
+                            </div>
+                            <div class="form-group">
+                                <label>DB Password</label>
+                                <input type="password" id="cfg-db_password">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="settings-section" class="tab-content">
+                <div class="card">
+                    <h2>Application Settings</h2>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label>Sync Interval (Hours)</label>
+                            <input type="number" id="set-interval" min="1" value="24" required>
+                            <small>How often the Data Logger automatically syncs data (default 24h).</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Sync Time of Day</label>
+                            <input type="time" id="set-sync-time">
+                            <small>Time of day to sync (if set, overrides interval).</small>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </div>
+                    </form>
+                    
+                    <hr class="separator">
+
+                    <h2>Import / Export Data</h2>
+                    <p class="subtitle">Backup or restore your full configuration and settings to a JSON file.</p>
+                    <div class="import-export-controls">
+                        <button id="export-btn" class="btn">Export Settings</button>
+                        <input type="file" id="import-file" style="display: none;" accept=".json">
+                        <button id="import-btn" class="btn btn-secondary">Import Settings</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <div id="toast" class="toast">Message saved</div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>
