@@ -3,19 +3,19 @@ version: '3.8'
 services:
   data_logger:
     build: 
-      context: .
+      context: ./trip_logger
       args:
-        - APP_VERSION=${APP_VERSION:-1.1.3}
+        - APP_VERSION=${APP_VERSION:-1.1.4}
     container_name: data_logger
     restart: unless-stopped
     labels:
-      - "org.opencontainers.image.version=${APP_VERSION:-1.1.3}"
+      - "org.opencontainers.image.version=${APP_VERSION:-1.1.4}"
       - "org.opencontainers.image.source=https://github.com/TiSocks/HyundaiDataLogger"
       - "org.opencontainers.image.title=Hyundai/Kia/Genesis Data Logger"
     ports:
       - "5002:5002"
     volumes:
-      - ./data:/app/data
+      - ./trip_logger/data:/app/data
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     networks:
