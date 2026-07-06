@@ -1,15 +1,15 @@
 # Use a pure, lightweight Python image
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 
 # Don't buffer output
 ENV PYTHONUNBUFFERED=1
 
-ARG APP_VERSION=1.1.4
+ARG APP_VERSION=1.1.5
 LABEL org.opencontainers.image.version="${APP_VERSION}"
 LABEL org.opencontainers.image.source="https://github.com/TiSocks/HyundaiDataLogger"
 
 # Install timezone data so Alpine understands the TZ variable
-RUN apk add --no-cache tzdata gcc musl-dev postgresql-dev
+RUN apk add --no-cache tzdata gcc musl-dev postgresql-dev libpq-dev python3-dev
 
 # Set working directory
 WORKDIR /app
@@ -17,8 +17,7 @@ WORKDIR /app
 # Copy the requirements file into the container
 COPY requirements.txt /app/
 
-# Install the required Python packages from the file
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # Copy source code and assets
 COPY app.py kia_logger.py /app/
