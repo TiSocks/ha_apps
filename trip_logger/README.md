@@ -1,6 +1,6 @@
-# Kia / Hyundai / Genesis Data Logger
+# Kia / Car / Genesis Data Logger
 
-A Home Assistant Add-on that automatically syncs your daily vehicle trip logs and energy stats from the Kia Connect / Hyundai Bluelink / Genesis Connected Services API directly into a PostgreSQL database.
+A Home Assistant Add-on that automatically syncs your daily vehicle trip logs and energy stats from the Kia Connect / Car Bluelink / Genesis Connected Services API directly into a PostgreSQL database.
 
 ## Features
 - **Data Syncing:** Fetches un-synced trips available on your profile for all available vehicles.
@@ -15,7 +15,7 @@ You must provide your Kia Connect credentials and your PostgreSQL connection det
 - **username**: Your Kia Connect / Bluelink email address.
 - **password**: Your password.
 - **region**: Your region (e.g. `AUSTRALIA`, `EUROPE`, `USA`).
-- **brand**: Your brand (`KIA`, `HYUNDAI`, `GENESIS`).
+- **brand**: Your brand (`KIA`, `CAR`, `GENESIS`).
 - **db_host**: Your PostgreSQL server host IP/hostname.
 - **db_name**: Name of the database to write to.
 - **db_user**: Database username.

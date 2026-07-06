@@ -10,8 +10,8 @@ services:
     restart: unless-stopped
     labels:
       - "org.opencontainers.image.version=${APP_VERSION:-1.1.6}"
-      - "org.opencontainers.image.source=https://github.com/TiSocks/HyundaiDataLogger"
-      - "org.opencontainers.image.title=Hyundai/Kia/Genesis Data Logger"
+      - "org.opencontainers.image.source=https://github.com/TiSocks/CarDataLogger"
+      - "org.opencontainers.image.title=Car/Kia/Genesis Data Logger"
     ports:
       - "5002:5002"
     volumes:

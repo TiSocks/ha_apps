@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 
 ARG APP_VERSION=1.1.6
 LABEL org.opencontainers.image.version="${APP_VERSION}"
-LABEL org.opencontainers.image.source="https://github.com/TiSocks/HyundaiDataLogger"
+LABEL org.opencontainers.image.source="https://github.com/TiSocks/CarDataLogger"
 
 RUN apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*
 

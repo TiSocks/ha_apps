@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 OPTIONS_FILE = "./data/options.json"
 
 REGION_MAP = {"EUROPE": 1, "CANADA": 2, "USA": 3, "CHINA": 4, "AUSTRALIA": 5, "INDIA": 6, "NZ": 7, "BRAZIL": 8}
-BRAND_MAP = {"KIA": 1, "HYUNDAI": 2, "GENESIS": 3}
+BRAND_MAP = {"KIA": 1, "CAR": 2, "GENESIS": 3}
 
 def get_options():
     if os.path.exists(OPTIONS_FILE):
@@ -102,7 +102,7 @@ def main():
 
     # Validate required Kia options
     if not all([options.get('username'), options.get('password')]):
-        logger.error("Kia/Hyundai account configuration is incomplete. Please update via the web interface.")
+        logger.error("Kia/Car account configuration is incomplete. Please update via the web interface.")
         return
 
     setup_database(options)
