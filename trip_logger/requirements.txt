@@ -1,5 +1,5 @@
 hyundai-kia-connect-api
 psycopg2-binary==2.9.9
 Flask==3.0.0
-APScheduler==3.10.4
+APScheduler==3.11.3
 waitress==3.0.0
